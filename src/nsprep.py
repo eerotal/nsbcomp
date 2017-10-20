@@ -41,6 +41,24 @@ symbols_greek = {
 	'omega': 	[u'\u03c9', u'\u03a9']
 }
 
+def parse_header(ln):
+	# Parse function header.
+	tmp = re.sub(r'(\r\n|\n|\r)', '', ln);
+	if (re.match(r'@{.*}$', tmp) == None):
+		print("Invalid header!");
+		return False;
+
+	tmp = re.sub(r'[@{}]', '', tmp);
+
+	args = re.findall(r'([A-Za-z]+[A-Za-z0-9]*,{0,1})', tmp);
+	if (args != None):
+		print("Function args:")
+		for a in args:
+			print('  ' + re.sub(',', '', a) + ' ');
+	else:
+		print("Function args: None");
+	return True;
+
 def unicode_regex_repl(match):
 	# Return the unicode character corresponding to
 	# the match argument 1 from 'match'.
@@ -52,7 +70,6 @@ def line_repl(ln):
 	# Whitespace replacement.
 	ret = re.sub(r'(\r\n|\n|\r)\s*', ':', ln);
 	ret = re.sub(r'^\s*', '', ret);
-
 
 	# Logic symbol replacement.
 	for s in symbols_logic:
@@ -71,18 +88,26 @@ def line_repl(ln):
 	for s in symbols_misc:
 		ret = re.sub(s, symbols_misc[s], ret);
 
-	# Generic unicode symbol code replacement.
+	# Generic unicode symbol replacement.
 	ret = re.sub(r'_u_\[([A-Fa-f0-9]{4})\]', unicode_regex_repl, ret);
 
 	return ret.encode('utf-8');
 
 def process(input, output):
-	print("Processing '" + input + "'.");
 	ln_min = "";
+	lines = 0;
+	print("Processing '" + input + "'.");
 	with open(input, 'r') as infile:
 		with open(output, 'w') as outfile:
 			for ln in infile:
-				ln_min = line_repl(ln);
-				outfile.write(ln_min);
+				if (ln[0:1] == '@'):
+					if (parse_header(ln) != True):
+						return;
+				else:
+					ln_min = line_repl(ln);
+					outfile.write(ln_min);
+				lines += 1;
+	print("Stats: ");
+	print("  LOC=" + str(lines));
 
 process("test/in.nssrc", "out.nsmin");
