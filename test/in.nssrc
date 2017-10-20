@@ -1,0 +1,9 @@
+Local i
+_g_pi:=0
+0->_g_tau
+For _u_[12cd],0,5,1
+	If i!=2 Then
+		Disp "test"
+	EndIf
+EndFor
+Return i
