@@ -1,1 +1,3 @@
 *.nsmin
+*.pyc
+__pycache__
