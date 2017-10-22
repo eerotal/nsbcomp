@@ -1,5 +1,7 @@
 #!/bin/python
 
+import cli
+
 symbols_assignment = {
 	'->':		u'\u2192',
 	'~=':		u'\u2248'
@@ -58,3 +60,25 @@ symbols_greek = {         # LOWER      UPPER
 	'psi': 		[u'\u03c8', u'\u03a8'],
 	'omega': 	[u'\u03c9', u'\u03a9']
 }
+
+def symbols_dump():
+	# Dump a symbol table to STDOUT.
+
+	for s in symbols_assignment:
+		cli.print_table_ln([s + ' :',
+			symbols_assignment[s].encode('utf-8')], 20);
+
+	for s in symbols_logic:
+		cli.print_table_ln([s + ' :',
+			symbols_logic[s].encode('utf-8')], 20);
+
+	for s in symbols_misc:
+		cli.print_table_ln([sym_misc_prefix + s + ' :',
+			symbols_misc[s].encode('utf-8')], 20);
+
+	for s in symbols_greek:
+		cli.print_table_ln([sym_greek_prefix + s + ' :',
+			(symbols_greek[s][0] + ' / '
+			+ symbols_greek[s][1]).encode('utf-8')], 20);
+
+	cli.print_table_ln(["_u_[XXXX] :", "U+XXXX"], 20);
