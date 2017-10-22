@@ -41,15 +41,14 @@ def line_repl(ln):
 
 	return ret.encode('utf-8');
 
-def process(input, output):
+def compile(input, output):
 	ln_min = "";
 	lines = 0;
-	print("Processing '" + input + "'.");
+	print("Compiling '" + input + "'...");
 	with open(input, 'r') as infile:
 		with open(output, 'w') as outfile:
 			for ln in infile:
 				ln_min = line_repl(ln);
 				outfile.write(ln_min);
 				lines += 1;
-	print("Stats: ");
-	print("  LOC=" + str(lines));
+	print("Done. LOC=" + str(lines));
