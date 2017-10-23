@@ -7,25 +7,25 @@ import symbols
 import compiler
 
 # Define the command line arguments.
-ap = argparse.ArgumentParser('nsbcomp - A compiler for compiling TI '
-				'NSpire Basic code from a more sane and '
-				'portable syntax.');
-ap.add_argument('--in', '-i', action='store', nargs=1, required=False,
+ap = argparse.ArgumentParser('nsbcomp');
+ap.add_argument('--in', '-i', action='store', nargs='+',
 		help='specify the input source file.');
-ap.add_argument('--out', '-o', action='store', nargs=1, required=False,
+ap.add_argument('--out', '-o', action='store', nargs='?',
+		default='out.nsmin', const='out.nsmin',
 		help='specify the compiled output file.');
 ap.add_argument('--symbols', '-s', action='store_true',
-		required=False,
 		help='display a list of valid symbols and exit.');
 
 # Parse the command line arguments and run the compiler.
 args = ap.parse_args();
-if (vars(args)['symbols'] == True):
+if (args.symbols == True):
 	symbols.symbols_dump();
 	sys.exit(0);
 else:
-	if (vars(args)['in'] != None and vars(args)['out'] != None):
-		compiler.compile("test/in.nssrc", "out.nsmin");
+	if (vars(args)['in']):
+		ret = compiler.compile(vars(args)['in'],
+				vars(args)['out']);
+		sys.exit(ret);
 	else:
-		print("No input or output file specified. Exiting.");
+		print("No input file specified. Exiting.");
 		sys.exit(1);

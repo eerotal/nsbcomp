@@ -1,0 +1,12 @@
+Define LibPub func2(test,test2,joo)=
+Func
+	Local i
+	_g_pi:=0
+	0->_g_tau
+	For _u_[12cd],0,_s_inf,1
+		If i!=2 Then
+			Disp "test"
+		EndIf
+	EndFor
+	Return i
+EndFunc

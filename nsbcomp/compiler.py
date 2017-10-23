@@ -44,11 +44,24 @@ def line_repl(ln):
 def compile(input, output):
 	ln_min = "";
 	lines = 0;
-	print("Compiling '" + input + "'...");
-	with open(input, 'r') as infile:
-		with open(output, 'w') as outfile:
-			for ln in infile:
-				ln_min = line_repl(ln);
-				outfile.write(ln_min);
-				lines += 1;
+
+	try:
+		outfile = open(output, 'w');
+	except IOError as e:
+		print(str(e));
+		return e.errno;
+
+	for inpath in input:
+		try:
+			with open(inpath, 'r') as infile:
+				for ln in infile:
+					ln_min = line_repl(ln);
+					outfile.write(ln_min);
+					lines += 1;
+		except IOError as e:
+			print(str(e));
+			outfile.close();
+			return e.errno;
+	outfile.close();
+
 	print("Done. LOC=" + str(lines));
