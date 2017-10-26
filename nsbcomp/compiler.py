@@ -1,6 +1,7 @@
 #!/bin/python
 
 import re
+import sys
 from symbols import *
 
 def unicode_regex_repl(match):
@@ -46,7 +47,10 @@ def compile(input, output):
 	lines = 0;
 
 	try:
-		outfile = open(output, 'w');
+		if output:
+			outfile = open(output, 'w');
+		else:
+			outfile = sys.stdout;
 	except IOError as e:
 		print(str(e));
 		return e.errno;
@@ -62,6 +66,6 @@ def compile(input, output):
 			print(str(e));
 			outfile.close();
 			return e.errno;
-	outfile.close();
 
-	print("Done. LOC=" + str(lines));
+	if outfile != sys.stdout:
+		outfile.close();

@@ -11,8 +11,7 @@ ap = argparse.ArgumentParser('nsbcomp');
 ap.add_argument('--in', '-i', action='store', nargs='+',
 		help='specify the input source file.');
 ap.add_argument('--out', '-o', action='store', nargs='?',
-		default='out.nsmin', const='out.nsmin',
-		help='specify the compiled output file.');
+		help='specify the output file.');
 ap.add_argument('--symbols', '-s', action='store_true',
 		help='display a list of valid symbols and exit.');
 
