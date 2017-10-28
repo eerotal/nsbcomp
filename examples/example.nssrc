@@ -1,0 +1,15 @@
+Define LibPub oddsum(_g_alpha, _g_beta)
+Func
+	_s_copy A function for calculating the sum of
+	_s_copy all the odd numbers between _g_alpha
+	_s_copy  and _g_beta.
+
+	Local ret
+	0->ret
+	For i, _g_alpha, _g_beta, 1
+		If i/2 != 0
+			ret:=ret+i
+		EndIf
+	EndFor
+	Return ret
+EndFunc

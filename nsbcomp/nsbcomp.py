@@ -6,7 +6,7 @@ import argparse
 import symbols
 import compiler
 
-# Define the command line arguments.
+# Define command line arguments.
 ap = argparse.ArgumentParser('nsbcomp');
 ap.add_argument('--in', '-i', action='store', nargs='+',
 		help='specify the input source file.');

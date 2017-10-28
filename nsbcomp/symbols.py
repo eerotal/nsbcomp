@@ -2,12 +2,10 @@
 
 import cli
 
-symbols_assignment = {
-	'->':		u'\u2192',
-	'~=':		u'\u2248'
-}
-
 symbols_logic = {
+	'<-':		u'\u2190',
+	'->':		u'\u2192',
+	'~=':		u'\u2248',
 	'!=':		u'\u2260',
 	'==':		u'\u003D',
 	'<=':		u'\u2264',
@@ -16,6 +14,7 @@ symbols_logic = {
 
 sym_misc_prefix = '_s_';
 symbols_misc = {
+	'copy':		u'\u00a9',
 	'inf': 		u'\u221e',
 	'plusminus': 	u'\u00b1',
 	'minusplus': 	u'\u2213',
@@ -35,7 +34,7 @@ symbols_misc = {
 
 sym_greek_prefix = '_g_';
 symbols_greek = {         # LOWER      UPPER
-	'lpha': 	[u'\u03b1', u'\u0391'],
+	'alpha': 	[u'\u03b1', u'\u0391'],
 	'beta': 	[u'\u03b2', u'\u0392'],
 	'gamma': 	[u'\u03b3', u'\u0393'],
 	'delta': 	[u'\u03b4', u'\u0394'],
