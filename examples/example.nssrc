@@ -1,3 +1,7 @@
+#define test1 1
+#define test2 test
+#define test3 sum(1,2,3)
+
 Define LibPub oddsum(_g_alpha, _g_beta)
 Func
 	_s_copy A function for calculating the sum of

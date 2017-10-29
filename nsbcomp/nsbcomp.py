@@ -5,6 +5,7 @@ import sys
 import argparse
 import symbols
 import compiler
+import preprocessor
 
 # Define command line arguments.
 ap = argparse.ArgumentParser('nsbcomp');

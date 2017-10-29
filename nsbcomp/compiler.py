@@ -58,7 +58,7 @@ def compile(input, output):
 			outfile = sys.stdout;
 	except IOError as e:
 		print(str(e));
-		return e.errno;
+		raise;
 
 	for inpath in input:
 		try:
@@ -70,7 +70,7 @@ def compile(input, output):
 		except IOError as e:
 			print(str(e));
 			outfile.close();
-			return e.errno;
+			raise;
 
 	if outfile != sys.stdout:
 		outfile.close();
