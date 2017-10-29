@@ -6,14 +6,15 @@
 import os.path
 import time
 import re
+import strutils
 
 DIR_TMP = "tmp";
-DEFINE_KEYWORD = "#define";
+KEYWORD_DEFINE = "#define";
+KEYWORD_INCLUDE = "#include";
 
 class PrepDefs():
-	scope = '';
+	root = None;
 	defs = {};
-	tmp_path = '';
 
 	def reset_defs(self):
 		self.defs = {};
@@ -22,63 +23,86 @@ class PrepDefs():
 		# Dump a string represenation of this
 		# PrepDefs object to STDOUT.
 		print('PrepDefs:');
-		print("\tScope:\n\t\t" + self.scope)
+		print("\tRoot:\n\t\t" + self.root)
 		print("\tDefs:");
 		for id in self.defs:
 			print("\t\t" + id + '=' + self.defs[id]);
 
-	def destroy(self):
-		# Free resources.
-		if os.path.exists(self.tmp_path):
-			try:
-				os.remove(self.tmp_path);
-			except OSError as e:
-				print(str(e));
-				raise;
+def ln_parse(ln, defs):
+	# Attempt to parse a line in case it contains
+	# a preprocessor statement. Returns the string to
+	# be written into the output file or an empty
+	# string if no string needs to be written.
 
-def parse_def(ln):
-	# Parse a definition line of the form
-	# DEFINE_KEYWORD <identifier> <value>
-	# Returns an array with the identifier as
-	# the first item and the value as the
-	# second one.
+	ret = None;
+	if ln.startswith(KEYWORD_DEFINE):
+		ret = ln_define_parse(ln, defs);
+		return '';
+	elif ln.startswith(KEYWORD_INCLUDE):
+		return ln_include_parse(ln, defs);
+	else:
+		return strutils.repl_list(ln, defs.defs);
 
+def ln_define_parse(ln, defs):
+	# Parse a preprocessor define statement.
+	tmp_ln = re.sub(r'\s*(\r\n|\n|\r)', '', ln);
+	tmp_ln = re.sub(r'\s+', ' ', tmp_ln);
+	p = tmp_ln.split(' ');
+	defs.defs[p[1]] = ' '.join(str(p[s]) for s in range(2, len(p)));
+
+def ln_include_parse(ln, defs):
+	# Parse a preprocessor include statement.
 	tmp_ln = re.sub(r'(\r\n|\n|\r)$', '', ln);
 	p = tmp_ln.split(' ');
-	return [p[1], ' '.join(str(p[s]) for s in range(2, len(p)))];
 
-def prep(in_path):
-	# Preprocess the file 'in_path'.
+	if os.path.exists(p[1]) and defs.root != p[1]:
+		return file_process(p[1], defs)
+	else:
+		return '';
 
-	tmp_file = None;
+def file_process(in_path, defs):
+	# Process the file 'in_path' using the preprocessor.
+	buffer = '';
 	in_file = None;
 
-	defs = PrepDefs();
-	defs.scope = in_path;
-	defs.tmp_path = os.path.join(DIR_TMP, str(round(time.time())));
-
-	print("Creating tmp file: " + defs.tmp_path);
-	if not os.path.exists(os.path.dirname(defs.tmp_path)):
-		try:
-			os.makedirs(os.path.dirname(defs.tmp_path));
-		except OSError as e:
-			if (e.errno != errno.EEXIST):
-				raise;
+	if defs.root == None:
+		defs.root = in_path;
 
 	try:
-		tmp_file = open(defs.tmp_path, 'w');
 		in_file = open(in_path, 'r');
 	except IOError as e:
 		print(str(e));
 		raise;
 
 	for ln in in_file:
-		if (ln.startswith(DEFINE_KEYWORD)):
-			ret = parse_def(ln);
-			defs.defs[ret[0]] = ret[1];
-		else:
-			tmp_file.write(ln);
+		ret = ln_parse(ln, defs);
+		if not ret == '':
+			buffer += ret;
 
 	in_file.close();
-	tmp_file.close();
-	return defs;
+	return buffer;
+
+def store_tmp_data(data):
+	# Store the string 'data' into a tmp file.
+	tmp_path = os.path.join(DIR_TMP, str(round(time.time())));
+
+	if not os.path.exists(os.path.dirname(tmp_path)):
+		try:
+			os.makedirs(os.pathdirname(tmp_path));
+		except OSError as e:
+			if e.errno != errno.EEXIST:
+				raise;
+
+	with open(tmp_path, 'w') as tmpf:
+		tmpf.write(data);
+
+	return tmp_path;
+
+def remove_tmp_data(path):
+	# Remove a tmp file at 'path'.
+	if os.path.exists(path):
+		try:
+			os.remove(path);
+		except OSError as e:
+			print(str(e));
+			raise;

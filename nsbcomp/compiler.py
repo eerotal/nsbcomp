@@ -2,7 +2,6 @@
 
 import re
 import sys
-from symbols import *
 
 def unicode_regex_repl(match):
 	# Return the unicode character corresponding to
@@ -21,32 +20,9 @@ def line_repl(ln, defs):
 	ret = ln.decode('utf-8');
 
 	# Whitespace replacement.
-	ret = re.sub(r'\s*(\r\n|\n|\r)\s*', ':', ln);
+	ret = re.sub(r'\s*(\r\n|\n|\r)', ':', ln);
 	ret = re.sub(r'^\s*', '', ret);
-
-	# Preprocessor definition replacement.
-	ret = ln_repl_by_list(ret, defs.defs, '');
-
-	# Logic symbol replacement.
-	ret = ln_repl_by_list(ret, symbols_logic, '');
-
-	# Misc symbol replacement.
-	ret = ln_repl_by_list(ret, symbols_misc, '_s_');
-
-	# Greek symbol replacement.
-	for s in symbols_greek:
-		if (re.search(sym_greek_prefix + s + 'u', ret)):
-			# Replace uppercase symbol.
-			ret = re.sub(sym_greek_prefix + s + 'u',
-				symbols_greek[s][1], ret);
-		else:
-			# Replace lowercase symbol.
-			ret = re.sub(sym_greek_prefix + s,
-				symbols_greek[s][0], ret);
-
-
-	# Generic unicode symbol replacement.
-	ret = re.sub(r'_u_\[([A-Fa-f0-9]{4})\]', unicode_regex_repl, ret);
+	ret = re.sub(r'\s+', ' ', ret);
 
 	return ret.encode('utf-8');
 

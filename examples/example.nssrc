@@ -1,6 +1,4 @@
-#define test1 1
-#define test2 test
-#define test3 sum(1,2,3)
+#include defs/greek.nsd
 
 Define LibPub oddsum(_g_alpha, _g_beta)
 Func

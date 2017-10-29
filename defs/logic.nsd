@@ -1,0 +1,7 @@
+#define ->           _UNICODE(0x2192)
+#define ~=           _UNICODE(0x2248)
+#define ==           _UNICODE(0x003D)
+#define <=           _UNICODE(0x2264)
+#define <-           _UNICODE(0x2190)
+#define !=           _UNICODE(0x2260)
+#define >=           _UNICODE(0x2265)
