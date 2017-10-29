@@ -9,7 +9,7 @@ import preprocessor
 
 # Define command line arguments.
 ap = argparse.ArgumentParser('nsbcomp');
-ap.add_argument('--in', '-i', action='store', nargs='+',
+ap.add_argument('--in', '-i', action='store', nargs='?',
 		help='specify the input source file.');
 ap.add_argument('--out', '-o', action='store', nargs='?',
 		help='specify the output file.');
@@ -23,8 +23,10 @@ if (args.symbols == True):
 	sys.exit(0);
 else:
 	if (vars(args)['in']):
-		ret = compiler.compile(vars(args)['in'],
-				vars(args)['out']);
+		defs = preprocessor.prep(vars(args)['in']);
+		ret = compiler.compile(defs.tmp_path,
+				vars(args)['out'], defs);
+		defs.destroy();
 		sys.exit(ret);
 	else:
 		print("No input file specified. Exiting.");

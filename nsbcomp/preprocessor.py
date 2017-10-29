@@ -27,6 +27,15 @@ class PrepDefs():
 		for id in self.defs:
 			print("\t\t" + id + '=' + self.defs[id]);
 
+	def destroy(self):
+		# Free resources.
+		if os.path.exists(self.tmp_path):
+			try:
+				os.remove(self.tmp_path);
+			except OSError as e:
+				print(str(e));
+				raise;
+
 def parse_def(ln):
 	# Parse a definition line of the form
 	# DEFINE_KEYWORD <identifier> <value>

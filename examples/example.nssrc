@@ -15,5 +15,6 @@ Func
 			ret:=ret+i
 		EndIf
 	EndFor
+	Disp test3
 	Return ret
 EndFunc

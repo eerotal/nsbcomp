@@ -17,12 +17,15 @@ def ln_repl_by_list(ln, symbols, prefix):
 		ret = re.sub(prefix + s, symbols[s], ret);
 	return ret;
 
-def line_repl(ln):
+def line_repl(ln, defs):
 	ret = ln.decode('utf-8');
 
 	# Whitespace replacement.
 	ret = re.sub(r'\s*(\r\n|\n|\r)\s*', ':', ln);
 	ret = re.sub(r'^\s*', '', ret);
+
+	# Preprocessor definition replacement.
+	ret = ln_repl_by_list(ret, defs.defs, '');
 
 	# Logic symbol replacement.
 	ret = ln_repl_by_list(ret, symbols_logic, '');
@@ -47,7 +50,7 @@ def line_repl(ln):
 
 	return ret.encode('utf-8');
 
-def compile(input, output):
+def compile(input, output, defs):
 	ln_min = "";
 	lines = 0;
 
@@ -60,17 +63,16 @@ def compile(input, output):
 		print(str(e));
 		raise;
 
-	for inpath in input:
-		try:
-			with open(inpath, 'r') as infile:
-				for ln in infile:
-					ln_min = line_repl(ln);
-					outfile.write(ln_min);
-					lines += 1;
-		except IOError as e:
-			print(str(e));
-			outfile.close();
-			raise;
+	try:
+		with open(input, 'r') as infile:
+			for ln in infile:
+				ln_min = line_repl(ln, defs);
+				outfile.write(ln_min);
+				lines += 1;
+	except IOError as e:
+		print(str(e));
+		outfile.close();
+		raise;
 
 	if outfile != sys.stdout:
 		outfile.close();
