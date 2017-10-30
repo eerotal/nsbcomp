@@ -3,18 +3,23 @@
 # This file contains a C-like preprocessor implementation for the
 # nsbcomp compiler.
 
+import os
+import errno
 import os.path
 import time
 import re
 import strutils
 
 def init():
-	global DIR_TMP, PRE_KEYWORDS;
+	global DIR_TMP, PRE_KEYWORDS, INCLUDE_PATHS;
 	DIR_TMP = 'tmp';
 	PRE_KEYWORDS = {
 		'define': ['#define', _ln_define_parse],
 		'include': ['#include', _ln_include_parse]
 	};
+	INCLUDE_PATHS = [
+		os.getcwd()
+	];
 
 class PrepDefs():
 	root = None;
@@ -44,6 +49,8 @@ def _ln_parse(ln, defs):
 	ret = None;
 	for k in PRE_KEYWORDS:
 		if ln.startswith(PRE_KEYWORDS[k][0]):
+			# Run parser function. Possible
+			# errors are passed on.
 			return PRE_KEYWORDS[k][1](ln, defs);
 	else:
 		return strutils.repl_list(ln, defs.defs);
@@ -56,21 +63,42 @@ def _ln_define_parse(ln, defs):
 	defs.defs[p[1]] = ' '.join(str(p[s]) for s in range(2, len(p)));
 	return '';
 
+def _get_include_abs_path(p):
+	fullpath = '';
+	if p.startswith('/'):
+		if os.path.isfile(p):
+			return p;
+		else:
+			return None;
+
+	for ipath in INCLUDE_PATHS:
+		fullpath = os.path.join(ipath, p);
+		if os.path.isfile(fullpath):
+			return fullpath;
+	return None;
+
 def _ln_include_parse(ln, defs):
 	# Parse a preprocessor include statement.
 	tmp_ln = re.sub(r'(\r\n|\n|\r)$', '', ln);
 	p = tmp_ln.split(' ');
 
-	if os.path.exists(p[1]):
-		if not p[1] in defs.included:
-			print('[Info] Including \'' + p[1] + '\'.');
-			defs.set_included(p[1]);
-			return file_process(p[1], defs);
+	fpath = _get_include_abs_path(p[1]);
+
+	if fpath != None:
+		if not fpath in defs.included:
+			print('[Info] Including \'' + fpath + '\'.');
+			defs.set_included(fpath);
+			return file_process(fpath, defs);
 		else:
 			print('[Warning] Prevented circular or ' +
 				'redundant include while attempting ' +
-				'to include \'' + p[1] + '\'.');
+				'to include \'' + fpath + '\'.');
 			return '';
+	else:
+		# File not found, raise IOError.
+		print('[Error] File ' + p[1] + ' not found!');
+		raise IOError(errno.ENOENT,
+			os.strerror(errno.ENOENT), p[1]);
 
 def file_process(in_path, defs):
 	# Process the file 'in_path' using the preprocessor.
@@ -88,7 +116,16 @@ def file_process(in_path, defs):
 		raise;
 
 	for ln in in_file:
-		ret = _ln_parse(ln, defs);
+		# Parse a line from the input file.
+		# In case an error occurs, cleanup
+		# routines are called and the error
+		# is re-raised afterwards.
+		try:
+			ret = _ln_parse(ln, defs);
+		except:
+			in_file.close();
+			raise;
+
 		if not ret == '':
 			buffer += ret;
 
@@ -101,7 +138,7 @@ def store_tmp_data(data):
 
 	if not os.path.exists(os.path.dirname(tmp_path)):
 		try:
-			os.makedirs(os.pathdirname(tmp_path));
+			os.makedirs(os.path.dirname(tmp_path));
 		except OSError as e:
 			if e.errno != errno.EEXIST:
 				raise;

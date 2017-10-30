@@ -2,5 +2,7 @@
 *.pyc
 *.swp
 *.save
+*.conf
+
 tmp
 __pycache__

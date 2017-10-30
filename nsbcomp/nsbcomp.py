@@ -22,7 +22,11 @@ args = ap.parse_args();
 if (vars(args)['in']):
 	defs = preprocessor.PrepDefs();
 
-	data = preprocessor.file_process(vars(args)['in'], defs);
+	try:
+		data = preprocessor.file_process(vars(args)['in'], defs);
+	except Exception as e:
+		sys.exit(e.errno);
+
 	tmp = preprocessor.store_tmp_data(data);
 
 	ret = compiler.compile(tmp, vars(args)['out'], defs);
