@@ -1,5 +1,6 @@
 #!/bin/python
 
+import os
 import re
 import sys
 
@@ -30,15 +31,19 @@ def compile(input, output, defs):
 	ln_min = "";
 	lines = 0;
 
-	try:
-		if output:
-			outfile = open(output, 'w');
-		else:
-			outfile = sys.stdout;
-	except IOError as e:
-		print(str(e));
-		raise;
+	# Open the output file. Errors are passed to the caller.
+	if output:
+		if not os.path.exists(os.path.dirname(output)):
+			try:
+				os.makedirs(os.path.dirname(output));
+			except OSError as e:
+				if e.errno != errno.EEXIST:
+					raise;
+		outfile = open(output, 'w');
+	else:
+		outfile = sys.stdout;
 
+	# Open the input file. Errors are passed to the caller.
 	try:
 		with open(input, 'r') as infile:
 			for ln in infile:
@@ -46,8 +51,8 @@ def compile(input, output, defs):
 				outfile.write(ln_min);
 				lines += 1;
 	except IOError as e:
-		print(str(e));
-		outfile.close();
+		if outfile != sys.stdout:
+			outfile.close();
 		raise;
 
 	if outfile != sys.stdout:

@@ -36,7 +36,15 @@ if (vars(args)['in']):
 	except Exception as e:
 		sys.exit(e.errno);
 
-	tmp = preprocessor.store_tmp_data(data);
+	try:
+		tmp = preprocessor.store_tmp_data(data);
+	except Exception as e:
+		print(str(e));
+
+		if args.preserve_tmp == False:
+			preprocessor.remove_tmp_data(tmp);
+
+		sys.exit(e.errno);
 
 	ret = compiler.compile(tmp, vars(args)['out'], defs);
 
