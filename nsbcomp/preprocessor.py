@@ -9,6 +9,7 @@ import os.path
 import time
 import re
 import strutils
+import cli
 
 def init():
 	global DIR_TMP, PRE_KEYWORDS, INCLUDE_PATHS;
@@ -40,11 +41,11 @@ class PrepDefs():
 	def dump(self):
 		# Dump a string represenation of this
 		# PrepDefs object to STDOUT.
-		print('PrepDefs:');
-		print("\tRoot:\n\t\t" + self.root)
-		print("\tDefs:");
+		cli.printv('PrepDefs:');
+		cli.printv("\tRoot:\n\t\t" + self.root)
+		cli.printv("\tDefs:");
 		for id in self.defs:
-			print("\t\t" + id + '=' + self.defs[id]);
+			cli.printv("\t\t" + id + '=' + self.defs[id]);
 
 def _ln_parse(ln, defs):
 	# Parse a line using the preprocessor system. Returns
@@ -100,17 +101,17 @@ def _ln_include_parse(ln, defs):
 
 	if fpath != None:
 		if not fpath in defs.included:
-			print('[Info] Including \'' + fpath + '\'.');
+			cli.printv('Including \'' + fpath + '\'.');
 			defs.set_included(fpath);
 			return file_process(fpath, defs);
 		else:
-			print('[Warning] Prevented circular or ' +
+			cli.printw('Prevented circular or ' +
 				'redundant include while attempting ' +
 				'to include \'' + fpath + '\'.');
 			return '';
 	else:
 		# File not found, raise IOError.
-		print('[Error] File ' + p[1] + ' not found!');
+		cli.printe('File ' + p[1] + ' not found!');
 		raise IOError(errno.ENOENT,
 			os.strerror(errno.ENOENT), p[1]);
 
@@ -126,7 +127,7 @@ def file_process(in_path, defs):
 	try:
 		in_file = open(in_path, 'r');
 	except IOError as e:
-		print(str(e));
+		cli.printe(str(e));
 		raise;
 
 	for ln in in_file:
@@ -169,7 +170,7 @@ def remove_tmp_data(path):
 		try:
 			os.remove(path);
 		except OSError as e:
-			print(str(e));
+			cli.printe(str(e));
 			raise;
 
 init();

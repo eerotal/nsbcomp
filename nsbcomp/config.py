@@ -7,9 +7,9 @@ CONFIG_FILE = 'nsbcomp.conf';
 config = {}
 
 def conf_dump():
-	print("Configuration:");
+	cli.printv("Configuration:");
 	for k in config:
-		print('\t' + k + ': ' + str(config[k]));
+		cli.printv('\t' + k + ': ' + str(config[k]));
 
 def _conf_parse_ln(ln):
 	tmp_ln = re.sub(r'(\r\n|\n|\r)', '', ln);
@@ -18,13 +18,13 @@ def _conf_parse_ln(ln):
 	config[parts[0]] = parts[1].split(',');
 
 def conf_load():
-	print('Loading config from \'' + CONFIG_FILE + '\'.');
+	cli.printv('Loading config from \'' + CONFIG_FILE + '\'.');
 
 	try:
 		with open(CONFIG_FILE, 'r') as conf:
 			for ln in conf:
 				_conf_parse_ln(ln);
 	except IOError as e:
-		print(str(e));
+		cli.printe(str(e));
 		raise;
 	return config;

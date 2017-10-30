@@ -6,6 +6,7 @@ import argparse
 import compiler
 import preprocessor
 import config
+import cli
 
 # Load the configuration file.
 config.conf_load();
@@ -17,6 +18,8 @@ ap.add_argument('--in', '-i', action='store', nargs='?',
 		help='specify the input source file.');
 ap.add_argument('--out', '-o', action='store', nargs='?',
 		help='specify the output file.');
+ap.add_argument('--verbose', '-v', action='store_true',
+		help='print verbose messages to STDOUT.');
 ap.add_argument('--preserve-tmp', '-p', action='store_true',
 		help='preserve tmp files on exit. Debug flag.');
 ap.add_argument('--dump-defines', '-d', action='store_true',
@@ -24,6 +27,9 @@ ap.add_argument('--dump-defines', '-d', action='store_true',
 
 # Parse the command line arguments and run the compiler.
 args = ap.parse_args();
+
+cli.verbose(args.verbose);
+
 if (vars(args)['in']):
 	if 'INCLUDE_PATHS' in config.config:
 		preprocessor.set_include_paths(
@@ -33,15 +39,16 @@ if (vars(args)['in']):
 	defs = preprocessor.PrepDefs();
 	try:
 		data = preprocessor.file_process(vars(args)['in'], defs);
-	except Exception as e:
+	except (IOError, OSError) as e:
 		sys.exit(e.errno);
 
+	tmp = None;
 	try:
 		tmp = preprocessor.store_tmp_data(data);
-	except Exception as e:
-		print(str(e));
+	except (IOError, OSError) as e:
+		cli.printe(str(e));
 
-		if args.preserve_tmp == False:
+		if args.preserve_tmp == False and tmp:
 			preprocessor.remove_tmp_data(tmp);
 
 		sys.exit(e.errno);
@@ -55,5 +62,5 @@ if (vars(args)['in']):
 
 	sys.exit(ret);
 else:
-	print("No input file specified. Exiting.");
+	cli.printm("No input file specified. Exiting.");
 	sys.exit(1);
