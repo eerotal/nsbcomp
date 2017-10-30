@@ -5,6 +5,11 @@ import sys
 import argparse
 import compiler
 import preprocessor
+import config
+
+# Load the configuration file.
+config.conf_load();
+config.conf_dump();
 
 # Define command line arguments.
 ap = argparse.ArgumentParser('nsbcomp');
@@ -20,8 +25,12 @@ ap.add_argument('--dump-defines', '-d', action='store_true',
 # Parse the command line arguments and run the compiler.
 args = ap.parse_args();
 if (vars(args)['in']):
-	defs = preprocessor.PrepDefs();
+	if 'INCLUDE_PATHS' in config.config:
+		preprocessor.set_include_paths(
+			config.config['INCLUDE_PATHS']
+		);
 
+	defs = preprocessor.PrepDefs();
 	try:
 		data = preprocessor.file_process(vars(args)['in'], defs);
 	except Exception as e:

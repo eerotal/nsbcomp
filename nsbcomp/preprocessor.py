@@ -21,6 +21,11 @@ def init():
 		os.getcwd()
 	];
 
+def set_include_paths(paths):
+	global INCLUDE_PATHS;
+	if paths:
+		INCLUDE_PATHS += paths;
+
 class PrepDefs():
 	root = None;
 	included = [];
@@ -46,6 +51,7 @@ def _ln_parse(ln, defs):
 	# the string to be written into the output file or an empty
 	# string if no string needs to be written.
 
+	global PRE_KEYWORDS;
 	ret = None;
 	for k in PRE_KEYWORDS:
 		if ln.startswith(PRE_KEYWORDS[k][0]):
@@ -64,6 +70,14 @@ def _ln_define_parse(ln, defs):
 	return '';
 
 def _get_include_abs_path(p):
+	# Get the absolute include path of 'p' by
+	# joining 'p' to the paths in the INCLUDE_PATHS
+	# array and returning the first path that exists.
+	# 'p' itself is returned in case it already is an
+	# absolute path. 'None' is returned if no generated
+	# path exists.
+
+	global INCLUDE_PATHS;
 	fullpath = '';
 	if p.startswith('/'):
 		if os.path.isfile(p):
@@ -134,6 +148,7 @@ def file_process(in_path, defs):
 
 def store_tmp_data(data):
 	# Store the string 'data' into a tmp file.
+	global DIR_TMP;
 	tmp_path = os.path.join(DIR_TMP, str(round(time.time())));
 
 	if not os.path.exists(os.path.dirname(tmp_path)):
