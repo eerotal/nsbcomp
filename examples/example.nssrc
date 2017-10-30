@@ -1,4 +1,4 @@
-#include defs/greek.nsd
+#include defs/symbols.nsd
 
 Define LibPub oddsum(_g_alpha, _g_beta)
 Func

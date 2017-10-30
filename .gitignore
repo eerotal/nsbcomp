@@ -1,5 +1,6 @@
 *.nsmin
 *.pyc
 *.swp
+*.save
 tmp
 __pycache__

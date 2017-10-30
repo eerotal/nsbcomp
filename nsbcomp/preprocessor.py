@@ -8,13 +8,21 @@ import time
 import re
 import strutils
 
-DIR_TMP = "tmp";
-KEYWORD_DEFINE = "#define";
-KEYWORD_INCLUDE = "#include";
+def init():
+	global DIR_TMP, PRE_KEYWORDS;
+	DIR_TMP = 'tmp';
+	PRE_KEYWORDS = {
+		'define': ['#define', _ln_define_parse],
+		'include': ['#include', _ln_include_parse]
+	};
 
 class PrepDefs():
 	root = None;
+	included = [];
 	defs = {};
+
+	def set_included(self, name):
+		self.included.append(name);
 
 	def reset_defs(self):
 		self.defs = {};
@@ -28,37 +36,41 @@ class PrepDefs():
 		for id in self.defs:
 			print("\t\t" + id + '=' + self.defs[id]);
 
-def ln_parse(ln, defs):
-	# Attempt to parse a line in case it contains
-	# a preprocessor statement. Returns the string to
-	# be written into the output file or an empty
+def _ln_parse(ln, defs):
+	# Parse a line using the preprocessor system. Returns
+	# the string to be written into the output file or an empty
 	# string if no string needs to be written.
 
 	ret = None;
-	if ln.startswith(KEYWORD_DEFINE):
-		ret = ln_define_parse(ln, defs);
-		return '';
-	elif ln.startswith(KEYWORD_INCLUDE):
-		return ln_include_parse(ln, defs);
+	for k in PRE_KEYWORDS:
+		if ln.startswith(PRE_KEYWORDS[k][0]):
+			return PRE_KEYWORDS[k][1](ln, defs);
 	else:
 		return strutils.repl_list(ln, defs.defs);
 
-def ln_define_parse(ln, defs):
+def _ln_define_parse(ln, defs):
 	# Parse a preprocessor define statement.
 	tmp_ln = re.sub(r'\s*(\r\n|\n|\r)', '', ln);
 	tmp_ln = re.sub(r'\s+', ' ', tmp_ln);
 	p = tmp_ln.split(' ');
 	defs.defs[p[1]] = ' '.join(str(p[s]) for s in range(2, len(p)));
+	return '';
 
-def ln_include_parse(ln, defs):
+def _ln_include_parse(ln, defs):
 	# Parse a preprocessor include statement.
 	tmp_ln = re.sub(r'(\r\n|\n|\r)$', '', ln);
 	p = tmp_ln.split(' ');
 
-	if os.path.exists(p[1]) and defs.root != p[1]:
-		return file_process(p[1], defs)
-	else:
-		return '';
+	if os.path.exists(p[1]):
+		if not p[1] in defs.included:
+			print('[Info] Including \'' + p[1] + '\'.');
+			defs.set_included(p[1]);
+			return file_process(p[1], defs);
+		else:
+			print('[Warning] Prevented circular or ' +
+				'redundant include while attempting ' +
+				'to include \'' + p[1] + '\'.');
+			return '';
 
 def file_process(in_path, defs):
 	# Process the file 'in_path' using the preprocessor.
@@ -67,6 +79,7 @@ def file_process(in_path, defs):
 
 	if defs.root == None:
 		defs.root = in_path;
+		defs.set_included(defs.root);
 
 	try:
 		in_file = open(in_path, 'r');
@@ -75,7 +88,7 @@ def file_process(in_path, defs):
 		raise;
 
 	for ln in in_file:
-		ret = ln_parse(ln, defs);
+		ret = _ln_parse(ln, defs);
 		if not ret == '':
 			buffer += ret;
 
@@ -106,3 +119,5 @@ def remove_tmp_data(path):
 		except OSError as e:
 			print(str(e));
 			raise;
+
+init();
