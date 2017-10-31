@@ -80,4 +80,5 @@ def main():
 		cli.printe("No input file specified. Exiting.");
 		sys.exit(1);
 
-main();
+if __name__ == '__main__':
+	main();

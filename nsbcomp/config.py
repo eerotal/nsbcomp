@@ -23,7 +23,6 @@ def _conf_parse_ln(ln):
 
 def conf_load():
 	cli.printv('Loading config from \'' + CONFIG_FILE + '\'.');
-
 	try:
 		with open(CONFIG_FILE, 'r') as conf:
 			for ln in conf:
