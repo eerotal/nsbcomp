@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import errno
 
 def unicode_regex_repl(match):
 	# Return the unicode character corresponding to
@@ -33,9 +34,10 @@ def compile(input, output, defs):
 
 	# Open the output file. Errors are passed to the caller.
 	if output:
-		if not os.path.exists(os.path.dirname(output)):
+		dir_out = os.path.dirname(output);
+		if dir_out != '' and not os.path.exists(dir_out):
 			try:
-				os.makedirs(os.path.dirname(output));
+				os.makedirs(dir_out);
 			except OSError as e:
 				if e.errno != errno.EEXIST:
 					raise;

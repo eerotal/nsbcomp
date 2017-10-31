@@ -15,7 +15,11 @@ def _conf_parse_ln(ln):
 	tmp_ln = re.sub(r'(\r\n|\n|\r)', '', ln);
 	tmp_ln = re.sub(r'\s*', '', tmp_ln);
 	parts = tmp_ln.split('=');
-	config[parts[0]] = parts[1].split(',');
+
+	if len(parts) == 2:
+		config[parts[0]] = parts[1].split(',');
+	else:
+		cli.printe('Invalid config line: ' + tmp_ln);
 
 def conf_load():
 	cli.printv('Loading config from \'' + CONFIG_FILE + '\'.');

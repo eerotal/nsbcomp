@@ -11,9 +11,12 @@ import re
 import strutils
 import cli
 
+DIR_TMP_FALLBACK = 'tmp';
+
 def init():
 	global DIR_TMP, PRE_KEYWORDS, INCLUDE_PATHS;
-	DIR_TMP = 'tmp';
+
+	DIR_TMP = DIR_TMP_FALLBACK;
 	PRE_KEYWORDS = {
 		'define': ['#define', _ln_define_parse],
 		'include': ['#include', _ln_include_parse]
@@ -21,6 +24,11 @@ def init():
 	INCLUDE_PATHS = [
 		os.getcwd()
 	];
+
+def set_tmp_dir(dir):
+	global DIR_TMP;
+	if dir:
+		DIR_TMP = dir;
 
 def set_include_paths(paths):
 	global INCLUDE_PATHS;
