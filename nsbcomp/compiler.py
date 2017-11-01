@@ -16,9 +16,16 @@ directives = {
 def line_repl(ln, defs):
 	ret = ln.decode('utf-8');
 
-	# Whitespace replacement.
+	if re.match(r'^\s*$', ret) or ret == '':
+		return '';
+
+	# Replace end of line with ':'.
 	ret = re.sub(r'\s*(\r\n|\n|\r)', ':', ln);
+
+	# Remove indentation.
 	ret = re.sub(r'^\s*', '', ret);
+
+	# Replace consequent whitespace chars with one space.
 	ret = re.sub(r'\s+', ' ', ret);
 
 	# Compiler directive replacement.

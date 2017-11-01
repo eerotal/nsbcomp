@@ -2,9 +2,9 @@
 
 Define LibPub oddsum(_g_alpha, _g_beta)
 Func
-	_s_copy A function for calculating the sum of
-	_s_copy all the odd numbers between _g_alpha
-	_s_copy  and _g_beta.
+	// A function for calculating the sum of
+	// all the odd numbers between _g_alpha
+	// and _g_beta.
 
 	Local ret
 	0->ret
@@ -13,6 +13,5 @@ Func
 			ret:=ret+i
 		EndIf
 	EndFor
-	Disp test3
 	Return ret
 EndFunc

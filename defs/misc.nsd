@@ -1,3 +1,5 @@
+#define //           _UNICODE(0x00a9)
+
 #define _s_box       _UNICODE(0x220e)
 #define _s_plusminus _UNICODE(0x00b1)
 #define _s_because   _UNICODE(0x2235)
