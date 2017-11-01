@@ -1,15 +1,15 @@
 #include defs/symbols.nsd
 
-Define LibPub oddsum(_g_alpha, _g_beta)
+Define LibPub evensum(_g_alpha, _g_beta)
 Func
 	// A function for calculating the sum of
-	// all the odd numbers between _g_alpha
+	// all the even numbers between _g_alpha
 	// and _g_beta.
 
 	Local ret
 	0->ret
 	For i, _g_alpha, _g_beta, 1
-		If i/2 != 0
+		If i/2 == 0
 			ret:=ret+i
 		EndIf
 	EndFor

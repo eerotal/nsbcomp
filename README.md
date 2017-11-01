@@ -13,6 +13,8 @@ up the indentation in the process.
 This compiler tries to solve these problems by:
  1. Defining a set of symbol shortcuts, such as _s_alpha for the
     greek letter alpha, that are replaced in the compiled output.
+    These symbol shortcuts can be used by including definition files
+    using the preprocessor system provided by this compiler.
  2. Generating the output file in a format that, while virtually
     unreadable, can be pasted straight into the TI NSpire program
     editor. Note that the pasted version doesn't include any kind
@@ -22,12 +24,14 @@ This compiler tries to solve these problems by:
 
 ## Command Line Arguments
 
-|     Option     |                            Explanation                            |
-| :------------- | :---------------------------------------------------------------  |
-|   --in/-i      | Input file(s). Multiple files produce a concatenated output file. |
-|   --out/-o     | Output file. STDOUT is used if this is omitted.                   | 
-|   --symbols/-s | Display a list of valid symbol codes.                             |
-|   --help/-h    | Display a help message.                                           |  
+|     Option        |                            Explanation                            |
+| :---------------- | :---------------------------------------------------------------  |
+| --in/-i           | Input file(s). Multiple files produce a concatenated output file. |
+| --out/-o          | Output file. STDOUT is used if this is omitted.                   |
+| --verbose/-v      | Print verbose messages to STDOUT.                                 |
+| --preserve-tmp/-p | Preserve created temporary files on exit. Debug flag.             |
+| --dump-defines/-d | Dump the definitions loaded from source files. Debug flag.        |
+| --help/-h         | Display a help message.                                           |
 
 ## Usage examples
 
