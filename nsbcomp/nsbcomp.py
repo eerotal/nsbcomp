@@ -14,8 +14,8 @@ def read_cli_args():
 
 	# Define command line arguments.
 	ap = argparse.ArgumentParser('nsbcomp');
-	ap.add_argument('--input', '-i', action='store', nargs='?',
-			help='specify the input source file.');
+	ap.add_argument('--input', '-i', action='store', nargs='+',
+			help='specify the input source files.');
 	ap.add_argument('--output', '-o', action='store', nargs='?',
 			help='specify the output file.');
 	ap.add_argument('--verbose', '-v', action='store_true',
@@ -43,37 +43,24 @@ def config_setup():
 		);
 
 def main():
+	tmp_path = '';
 	args = read_cli_args();
 	cli.verbose(args.verbose);
 
 	config_setup();
 
 	if (args.input):
-		cli.printv("Preprocessing input file: " + args.input);
-		defs = preprocessor.PrepDefs();
+		cli.printv("Preprocessing input files.");
 		try:
-			data = preprocessor.file_process(args.input, defs);
+			tmp_path = preprocessor.multifile_process(args.input);
 		except (IOError, OSError) as e:
 			sys.exit(e.errno);
 
-		tmp = None;
-		try:
-			tmp = preprocessor.store_tmp_data(data);
-		except (IOError, OSError) as e:
-			cli.printe(str(e));
-
-			if args.preserve_tmp == False and tmp:
-				preprocessor.remove_tmp_data(tmp);
-
-			sys.exit(e.errno);
-
-		cli.printv("Compiling tmp file: " + tmp);
-		ret = compiler.compile(tmp, args.output, defs);
+		cli.printv("Compiling tmp file: " + tmp_path);
+		ret = compiler.compile(tmp_path, args.output);
 
 		if args.preserve_tmp == False:
-			preprocessor.remove_tmp_data(tmp);
-		if args.dump_defines == True:
-			defs.dump();
+			preprocessor.remove_tmp_data(tmp_path);
 
 		sys.exit(ret);
 	else:

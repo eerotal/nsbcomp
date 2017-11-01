@@ -13,7 +13,7 @@ directives = {
 	}
 }
 
-def line_repl(ln, defs):
+def line_repl(ln):
 	ret = ln.decode('utf-8');
 
 	if re.match(r'^\s*$', ret) or ret == '':
@@ -36,7 +36,7 @@ def line_repl(ln, defs):
 
 	return ret.encode('utf-8');
 
-def compile(input, output, defs):
+def compile(input, output):
 	ln_min = "";
 	lines = 0;
 
@@ -57,7 +57,7 @@ def compile(input, output, defs):
 	try:
 		with open(input, 'r') as infile:
 			for ln in infile:
-				ln_min = line_repl(ln, defs);
+				ln_min = line_repl(ln);
 				outfile.write(ln_min);
 				lines += 1;
 	except IOError as e:

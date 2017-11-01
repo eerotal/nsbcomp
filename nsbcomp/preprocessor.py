@@ -35,7 +35,7 @@ def set_include_paths(paths):
 	if paths:
 		INCLUDE_PATHS += paths;
 
-class PrepDefs():
+class PrepDefs(object):
 	root = None;
 	included = [];
 	defs = {};
@@ -43,14 +43,18 @@ class PrepDefs():
 	def set_included(self, name):
 		self.included.append(name);
 
-	def reset_defs(self):
+	def reset(self):
+		self.root = None;
+		self.included = [];
 		self.defs = {};
 
 	def dump(self):
 		# Dump a string represenation of this
 		# PrepDefs object to STDOUT.
 		cli.printv('PrepDefs:');
-		cli.printv("\tRoot:\n\t\t" + self.root)
+		cli.printv("\tRoot:");
+		if self.root:
+			cli.printv("\t\t" + self.root);
 		cli.printv("\tDefs:");
 		for id in self.defs:
 			cli.printv("\t\t" + id + '=' + self.defs[id]);
@@ -155,22 +159,41 @@ def file_process(in_path, defs):
 	in_file.close();
 	return buffer;
 
-def store_tmp_data(data):
-	# Store the string 'data' into a tmp file.
-	global DIR_TMP;
-	tmp_path = os.path.join(DIR_TMP, str(round(time.time())));
+def multifile_process(in_paths):
+	# Process the files in the array 'in_paths' using
+	# the preprocessor. A file path to a tmp file containing
+	# the processed data is returned.
 
-	if not os.path.exists(os.path.dirname(tmp_path)):
+	tmp_path = make_tmp_path();
+	data = '';
+	defs = PrepDefs();
+
+	for i in in_paths:
+		cli.printv("Preprocessing: " + i);
+		defs.reset();
+		data = file_process(i, defs);
+		write_tmp_data(data, tmp_path, append=True);
+
+	return tmp_path;
+
+def make_tmp_path():
+	global DIR_TMP;
+	return os.path.join(DIR_TMP, str(round(time.time())));
+
+def write_tmp_data(data, path, append=False):
+	# Store the string 'data' into a tmp file.
+
+	if not os.path.exists(os.path.dirname(path)):
 		try:
-			os.makedirs(os.path.dirname(tmp_path));
+			os.makedirs(os.path.dirname(path));
 		except OSError as e:
 			if e.errno != errno.EEXIST:
 				raise;
 
-	with open(tmp_path, 'w') as tmpf:
+	with open(path, 'a' if append else 'w') as tmpf:
+		if append:
+			tmpf.seek(0, 2);
 		tmpf.write(data);
-
-	return tmp_path;
 
 def remove_tmp_data(path):
 	# Remove a tmp file at 'path'.
