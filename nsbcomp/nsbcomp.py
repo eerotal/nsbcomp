@@ -22,8 +22,6 @@ def read_cli_args():
 			help='print verbose messages to STDOUT.');
 	ap.add_argument('--preserve-tmp', '-p', action='store_true',
 			help='preserve tmp files on exit. Debug flag.');
-	ap.add_argument('--dump-defines', '-d', action='store_true',
-			help='dump the defined constants. Debug flag.');
 
 	# Parse and return the command line arguments.
 	return ap.parse_args();

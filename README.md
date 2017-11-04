@@ -30,7 +30,6 @@ This compiler tries to solve these problems by:
 | --out/-o          | Output file. STDOUT is used if this is omitted.                   |
 | --verbose/-v      | Print verbose messages to STDOUT.                                 |
 | --preserve-tmp/-p | Preserve created temporary files on exit. Debug flag.             |
-| --dump-defines/-d | Dump the definitions loaded from source files. Debug flag.        |
 | --help/-h         | Display a help message.                                           |
 
 ## Usage examples
