@@ -35,7 +35,7 @@ steps to take are listed below.
    will create a subdirectory called `nsbcomp.git` where it downloads the
    sources.
 2. Run `cd nsbcomp.git` to switch into the downloaded source directory and
-   run 'make configure'.
+   run `make configure`.
 3. `nsbcomp` is now ready to be used. There are some usage examples in the
    section `Usage examples` in this file.
 
