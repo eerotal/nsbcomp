@@ -22,6 +22,23 @@ This compiler tries to solve these problems by:
     include indentation, the code can just be edited using a normal
     text editor or IDE.  
 
+## Installing
+
+The installation (or configuration) procedure is quite simple. The
+steps to take are listed below.  
+
+1. Install git, Python 2 and GNU Make. On Debian Stretch these can be
+   installed by running the command `sudo apt update && sudo apt install git python2.7 make`.
+1. Download the nsbcomp sources with git by running
+   `git clone https://github.com/eerotal/nsbcomp.git` in your home directory
+   or in a directory where you want the sources to be placed. This command
+   will create a subdirectory called `nsbcomp.git` where it downloads the
+   sources.
+2. Run `cd nsbcomp.git` to switch into the downloaded source directory and
+   run 'make configure'.
+3. `nsbcomp` is now ready to be used. There are some usage examples in the
+   section `Usage examples` in this file.
+
 ## Command Line Arguments
 
 |     Option        |                            Explanation                            |
@@ -38,9 +55,9 @@ This compiler tries to solve these problems by:
 * This command compiles the file `examples/example.nssrc` and outputs
   the result to STDOUT.  
 
-`python nsbcomp/nsbcomp.py -i examples/example.nssrc -o out.nsmin`
-* This command compiles the file `examples/example.nssrc` and outputs
-  the result to the file `out.nsmin`.  
+`python nsbcomp/nsbcomp.py -i examples/* -o out.nsmin`
+* This command compiles all of the files in the `examples` directory
+  and outputs the concatenated result to the file `out.nsmin`.  
 
 ## License information
 

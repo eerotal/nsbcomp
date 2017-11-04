@@ -28,7 +28,13 @@ def read_cli_args():
 
 def config_setup():
 	# Load the configuration file.
-	config.conf_load();
+	try:
+		config.conf_load();
+	except IOError as e:
+		if e.errno == errno.ENOENT:
+			cli.printe('Failed to load config file: ' + str(e));
+			return;
+
 	config.conf_dump();
 
 	if 'INCLUDE_PATHS' in config.config:

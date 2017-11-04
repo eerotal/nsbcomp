@@ -23,11 +23,7 @@ def _conf_parse_ln(ln):
 
 def conf_load():
 	cli.printv('Loading config from \'' + CONFIG_FILE + '\'.');
-	try:
-		with open(CONFIG_FILE, 'r') as conf:
-			for ln in conf:
-				_conf_parse_ln(ln);
-	except IOError as e:
-		cli.printe(str(e));
-		raise;
+	with open(CONFIG_FILE, 'r') as conf:
+		for ln in conf:
+			_conf_parse_ln(ln);
 	return config;
