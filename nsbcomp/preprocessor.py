@@ -10,6 +10,7 @@ import time
 import re
 import strutils
 import cli
+import sys
 
 DIR_TMP_FALLBACK = 'tmp';
 
@@ -129,24 +130,32 @@ def _ln_include_parse(ln, defs):
 
 def file_process(in_path, defs):
 	# Process the file 'in_path' using the preprocessor.
+	# If 'in_path' is None, input is read from STDIN instead.
+	# This function returns the processed data as a string.
+
 	buffer = '';
 	in_file = None;
 
 	if defs.root == None:
-		defs.root = in_path;
-		defs.set_included(defs.root);
+		if in_path:
+			defs.root = in_path;
+			defs.set_included(defs.root);
+		else:
+			defs.root = '<STDIN>';
+			defs.set_included('<STDIN>');
 
-	try:
-		in_file = open(in_path, 'r');
-	except IOError as e:
-		cli.printe(str(e));
-		raise;
+	# Open the input file or use STDIN if in_path == None.
+	if in_path:
+		try:
+			in_file = open(in_path, 'r');
+		except (IOError, OSError) as e:
+			cli.printe(str(e));
+			raise;
+	else:
+		in_file = sys.stdin;
 
+	# Parse the input file line by line.
 	for ln in in_file:
-		# Parse a line from the input file.
-		# In case an error occurs, cleanup
-		# routines are called and the error
-		# is re-raised afterwards.
 		try:
 			ret = _ln_parse(ln, defs);
 		except:
@@ -156,7 +165,9 @@ def file_process(in_path, defs):
 		if not ret == '':
 			buffer += ret;
 
-	in_file.close();
+	if in_file != sys.stdin:
+		in_file.close();
+
 	return buffer;
 
 def multifile_process(in_paths):
@@ -168,11 +179,16 @@ def multifile_process(in_paths):
 	data = '';
 	defs = PrepDefs();
 
-	for i in in_paths:
-		cli.printv("Preprocessing: " + i);
-		defs.reset();
-		data = file_process(i, defs);
+	if not in_paths:
+		cli.printv('Preprocessing from STDIN.');
+		data = file_process(None, defs);
 		write_tmp_data(data, tmp_path, append=True);
+	else:
+		for i in in_paths:
+			cli.printv('Preprocessing: ' + i);
+			defs.reset();
+			data = file_process(i, defs);
+			write_tmp_data(data, tmp_path, append=True);
 
 	return tmp_path;
 

@@ -15,9 +15,9 @@ def read_cli_args():
 	# Define command line arguments.
 	ap = argparse.ArgumentParser('nsbcomp');
 	ap.add_argument('--input', '-i', action='store', nargs='+',
-			help='specify the input source files.');
+			help='specify the input source files. STDIN if omitted');
 	ap.add_argument('--output', '-o', action='store', nargs='?',
-			help='specify the output file.');
+			help='specify the output file. STDOUT if omitted.');
 	ap.add_argument('--verbose', '-v', action='store_true',
 			help='print verbose messages to STDOUT.');
 	ap.add_argument('--preserve-tmp', '-p', action='store_true',
@@ -53,23 +53,26 @@ def main():
 
 	config_setup();
 
-	if (args.input):
-		cli.printv("Preprocessing input files.");
-		try:
-			tmp_path = preprocessor.multifile_process(args.input);
-		except (IOError, OSError) as e:
-			sys.exit(e.errno);
+	cli.printv("Preprocessing input files.");
+	try:
+		tmp_path = preprocessor.multifile_process(args.input);
+	except (IOError, OSError) as e:
+		sys.exit(e.errno);
 
-		cli.printv("Compiling tmp file: " + tmp_path);
-		ret = compiler.compile(tmp_path, args.output);
+	cli.printv("Compiling tmp file: " + tmp_path);
 
+	try:
+		compiler.compile(tmp_path, args.output);
+	except (IOError, OSError) as e:
 		if args.preserve_tmp == False:
 			preprocessor.remove_tmp_data(tmp_path);
 
-		sys.exit(ret);
-	else:
-		cli.printe("No input file specified. Exiting.");
-		sys.exit(1);
+		if e.errno == errno.ENOENT:
+			cli.printe(str(e));
+			sys.exit(e.errno);
+
+	if args.preserve_tmp == False:
+		preprocessor.remove_tmp_data(tmp_path);
 
 if __name__ == '__main__':
 	main();

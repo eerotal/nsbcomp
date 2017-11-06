@@ -37,9 +37,6 @@ def line_repl(ln):
 	return ret.encode('utf-8');
 
 def compile(input, output):
-	ln_min = "";
-	lines = 0;
-
 	# Open the output file. Errors are passed to the caller.
 	if output:
 		dir_out = os.path.dirname(output);
@@ -57,13 +54,12 @@ def compile(input, output):
 	try:
 		with open(input, 'r') as infile:
 			for ln in infile:
-				ln_min = line_repl(ln);
-				outfile.write(ln_min);
-				lines += 1;
-	except IOError as e:
+				outfile.write(line_repl(ln));
+	except (IOError, OSError):
 		if outfile != sys.stdout:
 			outfile.close();
 		raise;
 
+	# Close file handles.
 	if outfile != sys.stdout:
 		outfile.close();

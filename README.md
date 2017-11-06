@@ -41,13 +41,13 @@ steps to take are listed below.
 
 ## Command Line Arguments
 
-|     Option        |                            Explanation                            |
-| :---------------- | :---------------------------------------------------------------  |
-| --in/-i           | Input file(s). Multiple files produce a concatenated output file. |
-| --out/-o          | Output file. STDOUT is used if this is omitted.                   |
-| --verbose/-v      | Print verbose messages to STDOUT.                                 |
-| --preserve-tmp/-p | Preserve created temporary files on exit. Debug flag.             |
-| --help/-h         | Display a help message.                                           |
+|     Option        |                                   Explanation                                     |
+| :---------------- | :-------------------------------------------------------------------------------- |
+| --in/-i           | Input file(s). STDIN is used if this is omitted. Multiple files are concatenated. |
+| --out/-o          | Output file. STDOUT is used if this is omitted.                                   |
+| --verbose/-v      | Print verbose messages to STDOUT.                                                 |
+| --preserve-tmp/-p | Preserve created temporary files on exit. Debug flag.                             |
+| --help/-h         | Display a help message.                                                           |
 
 ## Usage examples
 
